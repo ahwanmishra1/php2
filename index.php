@@ -14,7 +14,7 @@ session_start();
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     <!-- External CSS -->
-    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/master.css" />
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.18/css/bootstrap-select.min.css" integrity="sha512-ARJR74swou2y0Q2V9k0GbzQ/5vJ2RBSoCWokg4zkfM29Fb3vZEQyv0iWBMW/yvKgyHSR/7D64pFMmU8nYmbRkg==" crossorigin="anonymous" />
   </head>
@@ -31,6 +31,7 @@ session_start();
       $firstNameErr = $lastNameErr = $aboutErr = $contactErr = $emailErr = $dobErr = $skillErr = $eduErr = $interestErr = $linkedinErr = $githubErr = $genderErr = $addressErr = $countryErr = $stateErr = $zipErr = $photoErr = "";
       $firstName = $lastName = $about = $contact = $email = $dob = $skill = $edu = $interest = $linkedin = $github = $gender = $address = $country = $state = $zip = $photo = "";
       $error = 'false';
+      $skills = $interests = "";
 
       if(isset($_POST["submit"]))
       {
@@ -47,6 +48,10 @@ session_start();
             $firstNameErr = "Only letters and white space allowed";
             $error = 'true';
           }
+          if(strlen($firstName) <= 3){
+            $firstNameErr = "More than three characters required.";
+            $error = 'true';
+          }
         }
 
         if (empty($_POST["lastName"])) {
@@ -59,20 +64,34 @@ session_start();
             $lastNameErr = "Only letters and white space allowed";
             $error = 'true';
           }
+          if(strlen($lastName) <= 3){
+            $lastNameErr = "More than three characters required.";
+            $error = 'true';
+          }
         }
 
 
-        if (empty($_POST["about"])) {
+        if (empty($_POST["about"]))
+        {
           $aboutErr = "Required";
           $error = 'true';
-        } else {
+        }
+        else {
           $about = test_input($_POST["about"]);
+          if(strlen($about) <= 10){
+            $aboutErr = "More than ten characters required.";
+            $error = 'true';
+          }
         }
         if (empty($_POST["address"])) {
           $addressErr = "Required";
           $error = 'true';
         } else {
           $address = test_input($_POST["address"]);
+          if(strlen($address) <= 3){
+            $addressErr = "More than three characters required.";
+            $error = 'true';
+          }
         }
         if (empty($_POST["email"])) {
           $emailErr = "Required";
@@ -193,7 +212,8 @@ session_start();
         }
 
         if(!empty($_POST['interest'])) {
-          $xx = $_POST['interest'];
+
+          $interests = $xx = $_POST['interest'];
           $no_checked = count($_POST['interest']);
           if($no_checked<2)
           {
@@ -216,7 +236,7 @@ session_start();
         }
 
         if(!empty($_POST['skill'])) {
-          $xx = $_POST['skill'];
+          $skills = $xx = $_POST['skill'];
           $no_checked = count($_POST['skill']);
           if($no_checked<2)
           {
@@ -245,17 +265,7 @@ session_start();
                     $new_name = $random_name . $extension;
                     if($_FILES["photo"]["size"] < 819200)
                     {
-                        $uploaded = move_uploaded_file($_FILES["photo"]["tmp_name"],
-                                                   "upload/" . $new_name);
-                        if($uploaded)
-                        {
-                          $photo = $new_name;
-                        }
-                        else
-                        {
-                          $error = 'true';
-                          $photoErr = "File could not be uploaded";
-                        }
+                        $photo = $new_name;
                     }
                     else
                     {
@@ -300,15 +310,32 @@ session_start();
     <!-- Header -->
     <div class="header">
       <div class="bg-light">
-        <div class="sidebar p-5 col col-lg-4 col text-light">
-            <h1>Resume</h1>
-            <p>Help us help you build your own resume website using HTML, CSS, BootStrap, JavaScript and PHP.</p>
-            <img src="https://pngimg.com/uploads/robot/robot_PNG57.png" height="750" width="750" alt="" class="m-5">
-            <button type="button" class="mt-3 btn btn-lg btn-light">Get Started</button>
-        </div>
+          <div class="row h-100">
+            <div class="sidebar col col-lg-6">
+              <div class="pt-5 pl-5 pr-5 row">
+                <div id='aaa' class="col-lg-8 text-light ">
+                  <h1>Resume</h1>
+                  <p>Help us help you build your own resume website using HTML, CSS, BootStrap, JavaScript and PHP.</p>
+                  <button type="button" class="mt-3 btn btn-lg btn-light">Get Started</button>
+
+                </div>
+
+              </div>
+              <div class="row">
+                  <div class="col text-right">
+                    <img src="https://pngimg.com/uploads/robot/robot_PNG57.png"  style="  width: 100%; " class="mt-5" >
+                  </div>
+              </div>
+
+            </div>
+          </div>
+
+        <!-- <div class="sidebar p-5 col col-lg-4">
+
+        </div> -->
         <div class="container-fluid">
           <div class="row">
-            <div class="col col-lg-4 sig col-12"></div>
+            <div class="bg-primary col col-lg-4 sig col-12"></div>
             <div class="sig col col-lg-2 col-12 "></div>
             <div class="sig col col-lg-4 col-12">
               <div class="signin">
@@ -321,35 +348,35 @@ session_start();
                   <div class="row">
                     <div class="col-md-6 mb-3">
                       <label for="firstName">First name</label>
-                      <input type="text" class="form-control" id="firstName" placeholder="" value="" name="firstName" >
+                      <input type="text" class="form-control" id="firstName" placeholder="" value="<?php echo ($firstNameErr=="") && isset($_POST["firstName"]) ? $_POST["firstName"] : ''; ?>" name="firstName" >
                       <div class="error"> <?php echo $firstNameErr;?></div>
                     </div>
                     <div class="col-md-6 mb-3">
                       <label for="lastName">Last name</label>
-                      <input type="text" class="form-control" id="lastName" placeholder="" value=""  name="lastName" >
+                      <input type="text" class="form-control" id="lastName" placeholder="" value="<?php echo ($lastNameErr=="") && isset($_POST["lastName"]) ? $_POST["lastName"] : ''; ?>"  name="lastName" >
                       <div class="error"> <?php echo $lastNameErr;?></div>
                     </div>
                   </div>
                   <div class="form-group">
-                    <label for="exampleFormControlTextarea1">About</label>
-                    <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" placeholder="Tell us something about yourself."  name="about" ></textarea>
+                    <label for="about">About</label>
+                    <textarea class="form-control" id="about" rows="3" placeholder="Tell us something about yourself." name="about" ><?php echo ($aboutErr=="") && isset($_POST["about"]) ? $_POST["about"] : ''; ?></textarea>
                     <div class="error"> <?php echo $aboutErr;?></div>
                   </div>
                   <div class="row">
                     <div class="col-md-4 mb-3">
                       <label for="email">Email</label>
-                      <input type="email" class="form-control" id="email" placeholder="abc@xyz.com" name="email" >
+                      <input type="email" class="form-control" id="email" value="<?php echo ($emailErr=="") && isset($_POST["email"]) ? $_POST["email"] : ''; ?>" placeholder="abc@xyz.com" name="email" >
                       <div class="error"> <?php echo $emailErr;?></div>
                     </div>
                     <div class="col-md-4 mb-3">
                       <label for="contact">Contact</label>
-                      <input type="text" class="form-control" id="contact" placeholder="9876543210" value=""  name="contact" >
+                      <input type="text" class="form-control" id="contact" placeholder="9876543210" value="<?php echo ($contactErr=="") && isset($_POST["contact"]) ? $_POST["contact"] : ''; ?>"  name="contact" >
                       <div class="error"> <?php echo $contactErr;?></div>
                     </div>
                     <div class="col-md-4 mb-3">
-                      <label for="datepicker">Date of birth</label>
-                      <div id="datepicker" class="input-group date" data-date-format="mm-dd-yyyy"  >
-                          <input class="form-control" type="text" name="dob" />
+                      <label for="dob">Date of birth</label>
+                      <div id="dob" class="input-group date" data-date-format="mm-dd-yyyy"  >
+                          <input class="form-control" type="text" name="dob" value="<?php echo ($dobErr=="") && isset($_POST["dob"]) ? $_POST["dob"] : ''; ?>" />
                           <span class="input-group-addon"></i></span>
                       </div>
                       <div class="error"> <?php echo $dobErr;?></div>
@@ -361,25 +388,25 @@ session_start();
                   <div class="row">
                     <div class="col-md-6">
                       <div class="custom-control custom-checkbox">
-                        <input type="checkbox" class="custom-control-input" value="html" id="html" name="skill[]">
+                        <input type="checkbox" class="custom-control-input" value="html" id="html" name="skill[]" <?php echo (in_array("html",$skills)) ? checked : ''; ?>>
                         <label class="custom-control-label" for="html">HTML</label>
                       </div>
                       <div class="custom-control custom-checkbox">
-                        <input type="checkbox" class="custom-control-input" value="css" id="css" name="skill[]">
+                        <input type="checkbox" class="custom-control-input" value="css" id="css" name="skill[]" <?php echo (in_array("css",$skills)) ? checked : ''; ?> >
                         <label class="custom-control-label" for="css">CSS</label>
                       </div>
                       <div class="custom-control custom-checkbox">
-                        <input type="checkbox" class="custom-control-input" value="bootstrap" id="bootstrap" name="skill[]">
+                        <input type="checkbox" class="custom-control-input" value="bootstrap" id="bootstrap" name="skill[]" <?php echo (in_array("bootstrap",$skills)) ? checked : ''; ?> >
                         <label class="custom-control-label" for="bootstrap">BootStrap</label>
                       </div>
                     </div>
                     <div class="col-md-6">
                       <div class="custom-control custom-checkbox">
-                        <input type="checkbox" class="custom-control-input" value="php" id="php" name="skill[]">
+                        <input type="checkbox" class="custom-control-input" value="php" id="php" name="skill[]" <?php echo (in_array("php",$skills)) ? checked : ''; ?> >
                         <label class="custom-control-label" for="php">Php</label>
                       </div>
                       <div class="custom-control custom-checkbox">
-                        <input type="checkbox" class="custom-control-input" value="git" id="git" name="skill[]">
+                        <input type="checkbox" class="custom-control-input" value="git" id="git" name="skill[]" <?php echo (in_array("git",$skills)) ? checked : ''; ?> >
                         <label class="custom-control-label" for="git">GitHub</label>
                       </div>
                     </div>
@@ -393,13 +420,13 @@ session_start();
 
                   <h4 class="mb-3">Qualification</h4>
                   <div class="mb-3">
-                    <label for="educaation">Educational Qualification</label>
-                    <select name="edu" class="custom-select d-block w-100" id="education" >
+                    <label for="edu">Educational Qualification</label>
+                    <select name="edu" class="custom-select d-block w-100" id="edu" >
                       <option  value="">Choose...</option>
-                      <option  value="btech">B.Tech</option>
-                      <option  value="mtech">M.Tech</option>
-                      <option  value="bca">BCA</option>
-                      <option  value="mca">MCA</option>
+                      <option  value="btech" <?php echo ($_POST["edu"] == "btech") ? selected : ''; ?>>B.Tech</option>
+                      <option  value="mtech" <?php echo ($_POST["edu"] == "mtech") ? selected : ''; ?>>M.Tech</option>
+                      <option  value="bca" <?php echo ($_POST["edu"] == "bca") ? selected : ''; ?>>BCA</option>
+                      <option  value="mca" <?php echo ($_POST["edu"] == "mca") ? selected : ''; ?>>MCA</option>
                     </select>
                     <div class="error"> <?php echo $eduErr;?></div>
                   </div>
@@ -408,10 +435,10 @@ session_start();
                   <div class="mb-3">
                     <label for="interests">Interests</label>
                     <select  multiple="multiple" name="interest[]" class="form-select d-block w-100"  id="interests">
-                      <option value="Dancing">Dancing</option>
-                      <option value="Singing" >Singing</option>
-                      <option value="Playing">Playing</option>
-                      <option value="Cooking">Cooking</option>
+                      <option value="Dancing" <?php echo (in_array("Dancing",$interests)) ? selected : ''; ?> >Dancing</option>
+                      <option value="Singing" <?php echo (in_array("Singing",$interests)) ? selected : ''; ?> >Singing</option>
+                      <option value="Playing" <?php echo (in_array("Playing",$interests)) ? selected : ''; ?> >Playing</option>
+                      <option value="Cooking" <?php echo (in_array("Cooking",$interests)) ? selected : ''; ?> >Cooking</option>
                     </select>
                     <div class="error"> <?php echo $interestErr;?></div>
                   </div>
@@ -421,13 +448,13 @@ session_start();
                     <div class="row">
                       <div class="col-md-6">
                         <label for="LinkedIn">LinkedIn Profile</label>
-                        <input type="text" class="form-control" id="LinkedIn" placeholder="www.LinkedIn.com/abc" name="linkedin">
+                        <input type="text" class="form-control" id="LinkedIn" placeholder="www.LinkedIn.com/abc" name="linkedin" value="<?php echo ($linkedinErr=="") && isset($_POST["linkedin"]) ? $_POST["linkedin"] : ''; ?>">
                         <div class="error"> <?php echo $linkedinErr;?></div>
                       </div>
 
                       <div class="col-md-6">
                         <label for="GitHub">GitHub Profile</label>
-                        <input type="text" class="form-control" id="GitHub" placeholder="www.GitHub.com/abc" name="github">
+                        <input type="text" class="form-control" id="GitHub" placeholder="www.GitHub.com/abc" name="github" value="<?php echo ($agithubErr=="") && isset($_POST["github"]) ? $_POST["github"] : ''; ?>">
                         <div class="error"> <?php echo $githubErr;?></div>
                       </div>
 
@@ -445,11 +472,11 @@ session_start();
 
                   <div class="d-block mb-3">
                     <div class="custom-control custom-radio">
-                      <input id="male" value="Male" name="gender" type="radio" class="custom-control-input" name="gender" >
+                      <input id="male" value="Male" name="gender" type="radio" class="custom-control-input" name="gender" <?php echo ($_POST["gender"] == "Male") ? checked : ''; ?> >
                       <label class="custom-control-label" for="male">Male</label>
                     </div>
                     <div class="custom-control custom-radio">
-                      <input id="female" value="Female" name="gender" type="radio" class="custom-control-input" name="gender">
+                      <input id="female" value="Female" name="gender" type="radio" class="custom-control-input" name="gender" <?php echo ($_POST["gender"] == "Female") ? checked : ''; ?>>
                       <label class="custom-control-label" for="female">female</label>
                     </div>
                   </div>
@@ -462,7 +489,7 @@ session_start();
 
                   <div class="mb-3">
                     <label for="address">Address</label>
-                    <input type="text" class="form-control" id="address" placeholder="1234 Main St" name="address" >
+                    <input type="text" class="form-control" id="address" placeholder="1234 Main St" name="address" value="<?php echo ($addressErr=="") && isset($_POST["address"]) ? $_POST["address"] : ''; ?>" >
                     <div class="error"> <?php echo $addressErr;?></div>
 
                   </div>
@@ -473,7 +500,7 @@ session_start();
                       <label for="country">Country</label>
                       <select name="country" class="custom-select d-block w-100" id="country" >
                         <option value="">Choose...</option>
-                        <option value="India">India</option>
+                        <option value="India" <?php echo ($_POST["country"] == "India") ? selected : ''; ?> >India</option>
                       </select>
                       <div class="error"> <?php echo $countryErr;?></div>
                     </div>
@@ -481,13 +508,13 @@ session_start();
                       <label for="state">State</label>
                       <select name="state" class="custom-select d-block w-100" id="state" >
                         <option  value="">Choose...</option>
-                        <option  value="Odisha">Odisha</option>
+                        <option  value="Odisha" <?php echo ($_POST["state"] == "Odisha") ? selected : ''; ?> >Odisha</option>
                       </select>
                       <div class="error"> <?php echo $stateErr;?></div>
                     </div>
                     <div class="col-md-3 mb-3">
                       <label for="zip">Zip</label>
-                      <input name="zip" type="text" class="form-control" id="zip" placeholder="" >
+                      <input name="zip" type="text" class="form-control" id="zip" placeholder="" value="<?php echo ($zipErr=="") && isset($_POST["zip"]) ? $_POST["zip"] : ''; ?>">
                       <div class="error"> <?php echo $zipErr;?></div>
                     </div>
                   </div>
@@ -574,10 +601,22 @@ session_start();
                   echo "<br>";
                   echo "<span class='output_text'>Error: </span>";
                   echo $error;
-                  
+
                   if($error == 'false' )
                   {
                       //create session variable as user has valid details
+                      $uploaded = move_uploaded_file($_FILES["photo"]["tmp_name"],
+                                                 "upload/" . $new_name);
+                      if($uploaded)
+                      {
+                        $photo = $new_name;
+                      }
+                      else
+                      {
+                        $error = 'true';
+                        $photoErr = "File could not be uploaded";
+                      }
+
                       $_SESSION["firstName"] = $firstName;
                       $_SESSION["lastName"] = $lastName;
                       $_SESSION["about"] = $about;
